@@ -57,6 +57,12 @@ def blast_sprot(blast_output, sprot_df, pident = 70, qcovs = 70, length_differen
     qcovs (float, optional): Threshold of query coverage, default 70%
     length_difference (float, optional): Threshold for max allowed length difference of query and subject sequences, default 20%
 
+    Example blast command for creating blast_output in command line:
+    ```
+    echo "qacc sacc pident length mismatch gapopen qlen qstart qend slen sstart send evalue bitscore qcovs stitle" | sed -E 's/ /\\t/g' > $output
+    $BLASTdir/$program -db $blast_sprot_database -query $query_fasta -evalue $eval -num_threads $threads -outfmt "6 qacc sacc pident length mismatch gapopen qlen qstart qend slen sstart send evalue bitscore qcovs stitle" >> $output
+    ```
+
     Example usage:
     >>> blast_result = blast_sprot('sprot_2022-05.blastp.gz', sprot_df, pident=70, qcovs=70, length_difference=20)
 
