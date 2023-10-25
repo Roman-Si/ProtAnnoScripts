@@ -1,23 +1,30 @@
 import pandas as pd
 import numpy as np
-import sys
 
 
 
 def process_unifire_dataframe(df):
     """
-    Takes as input an arba or unirule dataframe. 
+    Takes as input an ARBA or UniRule dataframe. 
     
     Returns:
-        Tuple of DataFrames: (protein_names, protein_families, ec_numbers, localizations, enzyme_keywords)
+        Tuple of DataFrames: protein_names, protein_families, ec_numbers, localizations, enzyme_keywords, gene_names
+    
 
+    ARBA does not give gene names.
     Example usage:
-    >>> arba_name, arba_fam, arba_ec, arba_loc, keyws_arba = process_unifire_dataframe(arba_df)
-    >>> unirule_name, unirule_fam, unirule_ec, unirule_loc, keyws_unirule = process_unifire_dataframe(unirule_df)
+    >>> arba_name, arba_fam, arba_ec, arba_loc, arba_keyws, arba_genes = process_unifire_dataframe(arba_df)
+    >>> unirule_name, unirule_fam, unirule_ec, unirule_loc, unirule_keyws, unirule_gene = process_unifire_dataframe(unirule_df)
 
     """ 
     # get the first recommended protein name
     protein_names = df.loc[df['AnnotationType'] == 'protein.recommendedName.fullName'].drop_duplicates(subset='ProteinId', keep='first', ignore_index=False)
+    # get gene names, only in unirule
+    if "gene.name.primary" in df['AnnotationType'].unique():
+        gene_names = df.loc[df['AnnotationType'] == "gene.name.primary"].drop_duplicates(subset='ProteinId', keep='first', ignore_index=False)
+    else:
+        gene_names = None
+    
     # get the protein family
     protein_families = df.loc[df['AnnotationType'] == 'comment.similarity']
     protein_families.loc[:, 'unifire_family'] = protein_families['Value'].str.split('elongs to the').str[1]
@@ -29,7 +36,7 @@ def process_unifire_dataframe(df):
     enzyme_keywords = df.loc[df['AnnotationType'] == 'keyword']
     enzyme_keywords = enzyme_keywords.loc[enzyme_keywords['Value'].str.endswith('ase') & (enzyme_keywords['AnnotationType'] == 'keyword')][['ProteinId', 'Value']]
     
-    return protein_names, protein_families[['ProteinId', 'unifire_family']], ec_numbers, localizations, enzyme_keywords
+    return protein_names, protein_families[['ProteinId', 'unifire_family']], ec_numbers, localizations, enzyme_keywords, gene_names
 
 
 def assign_location(df,location_df, words, location_type):
@@ -83,7 +90,7 @@ def merge_unifire_annotations(arba, unirule):
         unirule (str): Path to the UniRule output.
     
     Returns:
-        pandas.DataFrame: DataFrame with UniFire annotations: protein name, protein family, EC, localization, enzyme keywords
+        pandas.DataFrame: DataFrame with UniFire annotations: protein name, gene name, protein family, EC, localization, enzyme keywords
     """ 
     
     # read the arba and unirule dataframes
@@ -95,8 +102,8 @@ def merge_unifire_annotations(arba, unirule):
     df = pd.DataFrame({'ProteinId': protein_ids})
 
     
-    arba_name, arba_fam, arba_ec, arba_loc, keyws_arba = process_unifire_dataframe(arba_df)
-    unirule_name, unirule_fam, unirule_ec, unirule_loc, keyws_unirule = process_unifire_dataframe(unirule_df)
+    arba_name, arba_fam, arba_ec, arba_loc, arba_keyws, arba_genes = process_unifire_dataframe(arba_df)
+    unirule_name, unirule_fam, unirule_ec, unirule_loc, unirule_keyws, unirule_genes = process_unifire_dataframe(unirule_df)
 
     ### Location
     location = pd.concat([arba_loc, unirule_loc], axis=0, ignore_index=True)
@@ -113,6 +120,11 @@ def merge_unifire_annotations(arba, unirule):
     names = pd.concat([unirule_name, arba_name], axis=0).drop_duplicates(subset='ProteinId',keep='first', inplace=False, ignore_index=False)
     names.loc[:, 'proteinName'] = names['Value']
 
+    # Genes
+    # ARBA does not give gene names.
+    genes = unirule_genes.drop_duplicates(subset='ProteinId',keep='first', inplace=False, ignore_index=False)
+    genes.loc[:, 'geneName'] = genes['Value']
+
     # Family
     family = pd.concat([unirule_fam, arba_fam], axis=0)
     family = family.groupby('ProteinId').agg(lambda x: ';'.join(set(x))).reset_index()
@@ -123,12 +135,12 @@ def merge_unifire_annotations(arba, unirule):
     ec.loc[:, 'unifire_EC'] = ec['Value']
     
     # Keywords
-    keyws = pd.concat([keyws_unirule, keyws_arba], axis=0).drop_duplicates(subset=['ProteinId', 'Value'],keep='first', inplace=False, ignore_index=False)
+    keyws = pd.concat([unirule_keyws, arba_keyws], axis=0).drop_duplicates(subset=['ProteinId', 'Value'],keep='first', inplace=False, ignore_index=False)
     keyws = keyws.groupby('ProteinId').agg(lambda x: ';'.join(set(x))).reset_index()
     keyws.loc[:, 'enzyme_keywords'] = keyws['Value']
     
     # merge them to the df dataframe
-    merge_list = [names[['ProteinId', 'proteinName']], family, ec[['ProteinId', 'unifire_EC']], keyws[['ProteinId', 'enzyme_keywords']]]
+    merge_list = [names[['ProteinId', 'proteinName']], genes[['ProteinId', 'geneName']], family, ec[['ProteinId', 'unifire_EC']], keyws[['ProteinId', 'enzyme_keywords']]]
     for data in merge_list:
         df = pd.merge(df, data, how='left', on='ProteinId')
     
