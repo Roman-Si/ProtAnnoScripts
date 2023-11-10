@@ -5,12 +5,12 @@ import numpy as np
 
 
 
-from src.localization.deeptmhmm import deeptmhmm
-from src.localization.signalp6 import signalp6
-from src.localization.deeploc2 import deeploc2
+from .deeptmhmm import deeptmhmm
+from .signalp6 import signalp6
+from .deeploc2 import deeploc2
 
 
-def location( signalp_output_file, deeptmhmm_output_file, deeploc2_output_file, output_file_path):
+def location( signalp_output_file: str, deeptmhmm_output_file: str, deeploc2_output_file: str) -> pd.DataFrame:
     """
     Give outputs of SignalP6, DeepTMHMM and DeepLoc2. 
     This function will classify these proteins with the following operations:
@@ -18,7 +18,7 @@ def location( signalp_output_file, deeptmhmm_output_file, deeploc2_output_file, 
         Transmembrane: DeepTMHMM
         Intracellular: All the rest
     
-    Returns the dataframe and saves it in output_file_path
+    Returns the dataframe
     """
     # parse the outputs
     signalp_data = signalp6(signalp_output_file)
@@ -40,7 +40,5 @@ def location( signalp_output_file, deeptmhmm_output_file, deeploc2_output_file, 
     df.loc[df['DeepTMHMM'].isin(tm_vals), 'Location'] = 'Transmembrane'
 
     df['Location'] = df['Location'].fillna('Intracellular')
-
-    df.to_csv(output_file_path, index=False)
     
     return df

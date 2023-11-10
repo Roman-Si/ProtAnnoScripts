@@ -1,9 +1,7 @@
 import pandas as pd
-import os
-import sys
 
 
-def deeptmhmm(deeptmhmm_output_file):
+def deeptmhmm(deeptmhmm_output_file: str) -> pd.DataFrame:
     """
     Parses the DeepTMHMM annotations from the tabular .gff3 output
     
@@ -12,7 +10,7 @@ def deeptmhmm(deeptmhmm_output_file):
     
     Returns:
     pandas.DataFrame: DataFrame containing protein IDs, the annotations and their their start and stop positions.
-    """ 
+    """
     df = pd.read_csv(deeptmhmm_output_file, sep='\t', header=None, names=['proteinId', 'Type', 'Start', 'End'], dtype={'proteinId': object})
     df.dropna(inplace=True)
     df['proteinId'] = df['proteinId'].str.split(' ').str[0]

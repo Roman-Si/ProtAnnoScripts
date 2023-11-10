@@ -3,7 +3,7 @@ import numpy as np
 
 
 
-def process_unifire_dataframe(df):
+def process_unifire_dataframe(df: pd.DataFrame):
     """
     Takes as input an ARBA or UniRule dataframe. 
     
@@ -39,7 +39,7 @@ def process_unifire_dataframe(df):
     return protein_names, protein_families[['ProteinId', 'unifire_family']], ec_numbers, localizations, enzyme_keywords, gene_names
 
 
-def assign_location(df,location_df, words, location_type):
+def assign_location(df: pd.DataFrame,location_df: pd.DataFrame, words: list, location_type: str):
     """
     Give a dataframe with ProteinIds, list of words and associated location type (Intracellular, Membrane, Extracellular)
     In case of already existing unifire_loc annotation append the new one with ";"
@@ -81,7 +81,7 @@ def assign_location(df,location_df, words, location_type):
     
     
 
-def merge_unifire_annotations(arba, unirule):
+def merge_unifire_annotations(arba: str, unirule: str) -> pd.DataFrame:
     """
     Merges ARBA and UniRule dataframes and extracts UniFire annotations.
 
