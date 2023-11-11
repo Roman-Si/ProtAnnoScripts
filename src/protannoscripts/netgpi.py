@@ -3,7 +3,7 @@ import os
 import sys
 
 
-def netgpi(netgpi_output_file: str) -> pd.DataFrame:
+def netgpi_to_df(netgpi_output_file: str) -> pd.DataFrame:
     """
     Takes NetGPI v1.1 output. Returns proteins with GPI-anchors.
     

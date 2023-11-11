@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def deeptmhmm(deeptmhmm_output_file: str) -> pd.DataFrame:
+def deeptmhmm_to_df(deeptmhmm_output_file: str) -> pd.DataFrame:
     """
     Parses the DeepTMHMM annotations from the tabular .gff3 output
     

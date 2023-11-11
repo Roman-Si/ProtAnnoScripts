@@ -56,7 +56,7 @@ def parse_sprot_fasta(sprot_fasta_file: str) -> pd.DataFrame:
     return df
 
 
-def blast_sprot(
+def blast_sprot_to_df(
     blast_output: str, sprot_df: pd.DataFrame, pident=70, qcovs=70, length_difference=20
 ) -> pd.DataFrame:
     """

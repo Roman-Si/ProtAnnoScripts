@@ -3,7 +3,7 @@ import numpy as np
 
 
 
-def signalp6(signalp6_output_file):
+def signalp6_to_df(signalp6_output_file):
     """
     Filters proteins from SignalP6 output to keep proteins with signal peptides.
     

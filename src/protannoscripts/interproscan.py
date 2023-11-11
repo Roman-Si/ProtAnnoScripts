@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def interproscan(interproscan_output_file: str) -> pd.DataFrame:
+def interproscan_to_df(interproscan_output_file: str) -> pd.DataFrame:
     """
     Parse the tsv interproscan output and return pandas dataframe 
    
@@ -22,7 +22,7 @@ def interproscan(interproscan_output_file: str) -> pd.DataFrame:
     return(df[['proteinId', 'Pr_length', 'Domain_length', 'Domain_cov',  'Analysis', 'Sig_acc','Sig_descr', 'Start_loc', 'Stop_loc', 'E Value', 
                'IPR_acc', 'IPR_descr', 'GO', 'Pathway']])
 
-def interproscan_to_tidy(interproscan_df: pd.DataFrame, interpro_entry_list: str) -> pd.DataFrame:
+def interproscan_df_to_tidy(interproscan_df: pd.DataFrame, interpro_entry_list: str) -> pd.DataFrame:
     """
     Make the interproscan dataframe of interproscan tidy. 
    

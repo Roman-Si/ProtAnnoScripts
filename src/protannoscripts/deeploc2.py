@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def deeploc2(deeploc2_output_file: str) -> pd.DataFrame:
+def deeploc2_to_df(deeploc2_output_file: str) -> pd.DataFrame:
     """
     Parses the DeepLoc2 csv output and returns the classifications of these proteins as a dataframe.
     
