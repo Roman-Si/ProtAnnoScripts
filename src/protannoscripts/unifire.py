@@ -111,7 +111,7 @@ def merge_unifire_annotations(arba: str, unirule: str) -> pd.DataFrame:
     assign_location(df, location, ['secret', 'extracellular', 'cell surface', 'cell wall'], "Extracellular")
     assign_location(df, location,['membrane'], "Membrane")
     assign_location(df,location, ['cytoplasm', 'nucleus'], "Intracellular")
-    df['unifire_loc'].replace("", np.nan, inplace=True)
+    df.replace({'unifire_loc' : ""},  np.nan, inplace=True)
     
     ### Process names, family, EC, and keywords here
     

@@ -68,3 +68,27 @@ def interproscan_df_to_tidy(interproscan_df: pd.DataFrame, interpro_entry_list: 
     return ipr_interproscan[['proteinId','Family', 'Homologous_superfamily', 'Domain',  'Active_site', 
                                 'Binding_site', 'Conserved_site',  'PTM', 'Repeat', 'IPR_acc', 'Sig_acc', 'Sig_descr']]
 
+
+
+def interproscan_df_to_go_df(interproscan_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Create a tidy GO dataframe with the GO terms of each proteinId from the interproscan dataframe.
+   
+    Parameters:
+    interproscan_df (pd.DataFrame): The dataframe from the interproscan function
+    
+    Returns:
+    pandas.DataFrame: DataFrame with one row per protein with GO annotations. Suitable format for GOATOOLS with ";" delimiter between GO annotations.
+    """ 
+
+    ### Parse InterPro annotations
+    go_df = interproscan_df[['proteinId', 'GO']]
+    go_df = go_df.loc[~go_df['GO'].isnull()]
+    go_df = go_df.replace('\|', ";", regex = True)
+    go_df = go_df.groupby('proteinId').agg(lambda x: ';'.join(set(x))).reset_index()
+    # revome dublicate GO terms for a protein
+    go_df['GO'] = go_df['GO'].str.split(';')
+    go_df['GO'] = go_df['GO'].apply(lambda x: list(set(x)))
+    go_df['GO'] = [';'.join(map(str, l)) for l in go_df['GO']]
+
+    return go_df

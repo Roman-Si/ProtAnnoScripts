@@ -16,7 +16,7 @@
         "avoid_keywords": ["inhibitor"]
     },
     "oxidoreductases": {
-        "keywords": ["oxidase", "reductase", "catalase", "dehydrogenase", "oxygenase", "laccase", "dismutase", "fad/nad", "cytochrome", "tyrosinase", "di-copper"],
-        "avoid_keywords": ["inhibitor", "oxidase-like", "reductase-like", "oxygenase-like"]
+        "keywords": ["oxidase", "reductase", "catalase", "dehydrogenase", "oxygenase", "laccase", "dismutase", "fad/nad", "cytochrome", "tyrosinase", "di-copper", "redoxin"],
+        "avoid_keywords": ["inhibitor", "oxidase-like", "reductase-like", "oxygenase-like", "redoxin-like"]
     }
 }
