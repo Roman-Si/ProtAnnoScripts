@@ -30,7 +30,8 @@ def tmhmm_to_df(tmhmm_output_file: str) -> pd.DataFrame:
     Returns:
     pandas.DataFrame: DataFrame containing protein IDs, the annotations and their their start and stop positions.
     """
-    df = pd.read_csv(tmhmm_output_file, sep='\t', header=None, comment='#', names=['proteinId', 'len',  'ExpAA','First60', 'PredHel', 'Topology'], dtype={'proteinId': object})
+    df = pd.read_csv(tmhmm_output_file, sep='\t', header=None,  names=['proteinId', 'len',  'ExpAA','First60', 'PredHel', 'Topology'], dtype={'proteinId': object})
+    # every column value contains the column name followed by =, remove them
     for col in df.columns:
         if col != 'proteinId':
             df[col] = df[col].str.replace(f'{col}=', '')

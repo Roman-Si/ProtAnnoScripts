@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+pd.options.mode.copy_on_write = True
 
 
 def process_unifire_dataframe(df: pd.DataFrame):
