@@ -55,9 +55,8 @@ def interproscan_df_to_tidy(interproscan_df: pd.DataFrame, interpro_entry_list: 
     # Merge the concatenated 'IPR_acc' with the pivoted dataframe
     ipr_interproscan = ipr_interproscan.merge(ipr_acc_concatenated, on='proteinId', how='left')
 
-    ### Take Sig annotations without InterPro annotation excluding Coils and MobiDBLite
-    interproscan_sig = interproscan_df.loc[(interproscan_df['IPR_acc'].isnull()) & 
-                                       (~interproscan_df['Analysis'].isin(["Coils", "MobiDBLite"]))][['proteinId', 'Sig_acc', 'Sig_descr']]
+    ### Take Sig annotations excluding Coils and MobiDBLite
+    interproscan_sig = interproscan_df.loc[~interproscan_df['Analysis'].isin(["Coils", "MobiDBLite"])][['proteinId', 'Sig_acc', 'Sig_descr']]
 
     interproscan_sig = interproscan_sig.replace(np.nan, '', regex=True)
     interproscan_sig = interproscan_sig.groupby('proteinId').agg(lambda x: ';'.join(set(x))).reset_index()
@@ -84,6 +83,8 @@ def interproscan_df_to_go_df(interproscan_df: pd.DataFrame) -> pd.DataFrame:
     ### Parse InterPro annotations
     go_df = interproscan_df[['proteinId', 'GO']]
     go_df = go_df.loc[~go_df['GO'].isnull()]
+    # latest interproscan gives the source of GO annotation in parenthesis
+    go_df['GO'] = go_df['GO'].str.replace(r'\(.*?\)', '', regex=True)
     go_df = go_df.replace('\|', ";", regex = True)
     go_df = go_df.groupby('proteinId').agg(lambda x: ';'.join(set(x))).reset_index()
     # revome dublicate GO terms for a protein

@@ -22,6 +22,7 @@ def parse_proteome_to_df(protein_fasta, mRNA_prefix) -> pd.DataFrame:
 
     data = {
         'proteinId': [],
+        'protein_seq': [],
         'protein_length': [],
         'theoretical_tryptic_peptides': [],
     }
@@ -33,6 +34,7 @@ def parse_proteome_to_df(protein_fasta, mRNA_prefix) -> pd.DataFrame:
         records = SeqIO.parse(fall, 'fasta')
         for record in records:
             data['proteinId'].append(record.id)
+            data['protein_seq'].append(str(record.seq))
             data['protein_length'].append(len(str(record.seq)))
             # Theoretical trypsin peptides
             result = list()

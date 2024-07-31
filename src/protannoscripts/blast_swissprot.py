@@ -30,7 +30,7 @@ def parse_sprot_fasta(sprot_fasta_file: str) -> pd.DataFrame:
                 record.id.split("|")[1] if "|" in record.id else record.id
             )
 
-            description = record.description.replace(record.id, "")
+            description = record.description.replace(record.id + " ", "")
 
             protein_names.append(re.match(r"(.*) OS\=.*", description).group(1))
             genes.append(
