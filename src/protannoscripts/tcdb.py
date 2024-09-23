@@ -1,7 +1,8 @@
-import pandas as pd
-from Bio import SearchIO
 from collections import defaultdict
 import gzip
+import pandas as pd
+from Bio import SearchIO
+
 
 def annotate_transporters(tcdb_blast_path, tcdb_fams_path, tcdb_subs_path, pident = 30, coverage = 70, hmm_bitscore = 100, tcdb_hmm_path=None) -> pd.DataFrame:
     """
@@ -99,4 +100,3 @@ def annotate_transporters(tcdb_blast_path, tcdb_fams_path, tcdb_subs_path, piden
     tcdb = tcdb.merge(tcdb_subs, on='tcdb_annotation', how="left")
 
     return tcdb
-

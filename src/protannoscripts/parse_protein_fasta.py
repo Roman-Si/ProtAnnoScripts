@@ -1,5 +1,5 @@
-import pandas as pd
 import gzip
+import pandas as pd
 from Bio import SeqIO
 from pyopenms import ProteaseDigestion, AASequence
 

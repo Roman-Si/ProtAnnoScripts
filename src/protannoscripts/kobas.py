@@ -43,4 +43,4 @@ def kobas_annotate_to_df(kobas_annotate_file: str) -> pd.DataFrame:
     df['KEGG_orthologs'] = df['KEGG_orthologs'].apply(lambda orthologs: ';'.join(set(orthologs)))
 
 
-    return(df)
+    return df

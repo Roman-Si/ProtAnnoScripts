@@ -3,9 +3,7 @@ import sys
 import pandas as pd
 import numpy as np
 
-
-
-from .deeptmhmm import deeptmhmm
+from .deeptmhmm import deeptmhmm    
 from .signalp6 import signalp6
 from .deeploc2 import deeploc2
 

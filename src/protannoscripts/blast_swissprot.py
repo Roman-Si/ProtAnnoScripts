@@ -56,7 +56,7 @@ def parse_sprot_fasta(sprot_fasta_file: str) -> pd.DataFrame:
     return df
 
 
-def blast_sprot_to_df(
+def filter_blast_to_sprot(
     blast_output: str, sprot_df: pd.DataFrame, pident=70, qcovs=70, length_difference=20
 ) -> pd.DataFrame:
     """
@@ -80,7 +80,7 @@ def blast_sprot_to_df(
     ```
 
     Example usage:
-    >>> blast_result = blast_sprot('sprot_2022-05.blastp.gz', sprot_df, pident=70, qcovs=70, length_difference=20)
+    >>> blast_result = filter_blast_to_sprot('sprot_2022-05.blastp.gz', sprot_df, pident=70, qcovs=70, length_difference=20)
 
 
     Returns:
@@ -90,7 +90,7 @@ def blast_sprot_to_df(
     df = pd.read_csv(blast_output, sep="\t", dtype={"qacc": object})
     # parse uniprot accession
     df["sacc"] = df["sacc"].apply(lambda x: x.split("|")[1] if "|" in x else x)
-    # calculate subject coverage
+    # calculate subject HSPs coverage
     df["scovs"] = ((df["send"] - df["sstart"]) / df["slen"]) * 100
     # filter
     df = df.loc[
@@ -122,3 +122,53 @@ def blast_sprot_to_df(
     ]
     df["proteinId"] = df["qacc"]
     return df
+
+
+
+
+def parse_sprot_for_gag(
+    blast_output: str, sprot_df: pd.DataFrame, gene_delimiter = "-", pident=70, qcovs=70, length_difference=20
+) -> pd.DataFrame:
+    """
+    Steps:
+    Filters the output of blastp to SwissProt with filter_blast_to_sprot.
+    Turns it to a 3 column tab file with columns ["qacc", "type", "sacc"] similar to annie output.
+    Return Datraframe.
+
+    Parameters:
+    blast_output (str): Tabular output of blast to SwissProt in outfmt 6 format. Needs the columns qacc, sacc, pident, qlen,slen, qcovs, bitscore.
+    sprot_df (dataframe): Dataframe with the annotations of Swissprot records, created with parse_sprot_fasta function.
+    gene_delimiter (str): The delimiter after gene_id for the mRNA id. After MAKER "-", for BRAKER ".t"
+    pident (float, optional): Threshold of percentage identity, default 70%
+    qcovs (float, optional): Threshold of query coverage, default 70%
+    length_difference (float, optional): Threshold for max allowed length difference of query and subject sequences, default 20%
+
+    Example blast command for creating blast_output in command line:
+    ```
+    echo "qacc sacc pident length mismatch gapopen qlen qstart qend slen sstart send evalue bitscore qcovs stitle" | sed -E 's/ /\\t/g' > $output
+    $BLASTdir/$program -db $blast_sprot_database -query $query_fasta -evalue $eval -num_threads $threads -outfmt "6 qacc sacc pident length mismatch gapopen qlen qstart qend slen sstart send evalue bitscore qcovs stitle" >> $output
+    ```
+
+    Example usage:
+    >>> sprot_annie = parse_sprot_for_GAG('sprot_2022-05.blastp.gz', sprot_df, pident=70, qcovs=70, length_difference=20)
+
+
+    Returns:
+    pandas.DataFrame: DataFrame with best alignment and its annotations.
+    """
+
+    df = filter_blast_to_sprot(blast_output, sprot_df, pident, qcovs, length_difference)
+    long_df = pd.melt(df[['qacc', 'Protein name', 'Gene']], id_vars=['qacc'], 
+                  value_vars=['Protein name', 'Gene'],
+                  var_name='type', value_name='sacc')
+    long_df['type'] = long_df['type'].replace({'Protein name': 'product', 'Gene': 'name'})
+    long_df.loc[long_df['type'] == "name", 'qacc'] = long_df['qacc'].str.split(gene_delimiter).str[0]
+    long_df = long_df.groupby("qacc").head(1)
+    long_df = long_df[~long_df['sacc'].isnull()]
+    
+    ### Some product polishing 
+    # remove the kDa from product name
+    long_df['sacc'] = long_df['sacc'].str.replace(r'( ?|-?)\d+ kDa', ' ', regex=True)
+    # Remove word homolog and everything after
+    long_df['sacc'] = long_df['sacc'].str.replace(r' homolog.*', '', regex=True)
+    return long_df

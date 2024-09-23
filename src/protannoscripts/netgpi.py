@@ -1,7 +1,4 @@
 import pandas as pd
-import os
-import sys
-
 
 def netgpi_to_df(netgpi_output_file: str) -> pd.DataFrame:
     """

@@ -1,9 +1,8 @@
-import pandas as pd
-import numpy as np
 import json
+import pandas as pd
 
 
-def search_annoCol_for_keywords(
+def search_annocol_for_keywords(
     df: pd.DataFrame, anno_column: str, keywords: list, avoid_keywords: list
 ) -> pd.DataFrame:
     """
@@ -79,7 +78,7 @@ def classify_proteins_to_families(
 
         # Filter proteins for the current family
         family_proteins = (
-            search_annoCol_for_keywords(df, anno_column, keywords, avoid_keywords)[
+            search_annocol_for_keywords(df, anno_column, keywords, avoid_keywords)[
                 protein_id_column
             ]
             .unique()
