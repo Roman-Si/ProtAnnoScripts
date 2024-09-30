@@ -148,6 +148,8 @@ def parse_interproscan_for_gag(interproscan_output_file: str, evalue = 1e-15, do
     # remove some usually problematic InterPro names, can be improved
     interproscan_df = interproscan_df.loc[~interproscan_df['IPR_descr'].str.contains(r'\,|Biosynthesis|enzymes|homolog|kda|SDRs|bacteria|jelly roll fold|type fold', regex=True, case = False) &
                                             (interproscan_df['IPR_descr'].str.split().str.len() > 1)]
+    # replace "Gene Protein" with "protein" in names
+    interproscan_df['IPR_descr'] = interproscan_df['IPR_descr'].str.replace("Gene Protein", "protein", regex=False)            
     # these lines have superfamily and family separated with ".", keep family
     interproscan_df['IPR_descr'] = interproscan_df['IPR_descr'].str.split(r"\. ").str[0]
     # Convert plular to singular

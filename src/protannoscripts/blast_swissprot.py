@@ -168,7 +168,9 @@ def parse_sprot_for_gag(
     
     ### Some product polishing 
     # remove the kDa from product name
-    long_df['sacc'] = long_df['sacc'].str.replace(r'( ?|-?)\d+ kDa', ' ', regex=True)
+    long_df['sacc'] = long_df['sacc'].str.replace(r'( ?|-?)\d+(\.\d+)? kDa', '', regex=True)
     # Remove word homolog and everything after
     long_df['sacc'] = long_df['sacc'].str.replace(r' homolog.*', '', regex=True)
+    # Remove word with an underscore and surrounding spaces
+    long_df['sacc']=long_df['sacc'].apply(lambda protein: ' '.join([word for word in protein.split() if '_' not in word]))
     return long_df
