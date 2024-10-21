@@ -4,7 +4,7 @@ import pandas as pd
 from Bio import SearchIO
 
 
-def annotate_transporters(tcdb_blast_path, tcdb_fams_path, tcdb_subs_path, pident = 30, coverage = 70, hmm_bitscore = 100, tcdb_hmm_path=None) -> pd.DataFrame:
+def annotate_transporters(tcdb_blast_path, tcdb_fams_path, tcdb_subs_path, pident = 30, qcovs=70, length_difference=20, hmm_bitscore = 100, tcdb_hmm_path=None) -> pd.DataFrame:
     """
     Annotate transporters using TCDB database.
 
@@ -22,7 +22,8 @@ def annotate_transporters(tcdb_blast_path, tcdb_fams_path, tcdb_subs_path, piden
     tcdb_fams_path (str): Path to file with tcdb familie descriptions. Available in data/tcdb_fams.tab
     tcdb_subs_path (str): Path to file with tcdb substrate annotations. Available in data/tcdb_subs.tab
     pident (float, optional): Threshold of BLAST percentage identity, default 30%
-    coverage (float, optional): Threshold of qcovs and scovs coverage, default 70%
+    qcovs (float, optional): Threshold of qcovs and scovs coverage, default 70%
+    length_difference (float, optional): Threshold for max allowed length difference of query and subject sequences, default 20%    
     hmm_bitscore (float, optional): Threshold for hmm bitscore, default 100
         
     Usage:
@@ -36,8 +37,8 @@ def annotate_transporters(tcdb_blast_path, tcdb_fams_path, tcdb_subs_path, piden
     tcdb_blast["scovs"] = ((tcdb_blast["send"] - tcdb_blast["sstart"]) / tcdb_blast["slen"]) * 100
     tcdb_blast = tcdb_blast.loc[
         (tcdb_blast["pident"] > pident) &
-        (tcdb_blast["qcovs"] > coverage) &
-        (tcdb_blast["scovs"] > coverage)]
+        (tcdb_blast["qcovs"] > qcovs) &
+        (abs(tcdb_blast["qlen"] - tcdb_blast["slen"]) / tcdb_blast["qlen"] < length_difference)]
     tcdb_blast = tcdb_blast.sort_values(by=["qacc", "bitscore"], ascending=[True, False]).groupby("qacc").head(1)
     tcdb_blast['proteinId'] = tcdb_blast['qacc']
     tcdb_blast['tcdb_blast'] = tcdb_blast["sacc"].apply(lambda x: x.split("|")[-1])
