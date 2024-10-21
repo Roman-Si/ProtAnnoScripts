@@ -45,6 +45,6 @@ def parse_proteome_to_df(protein_fasta, mRNA_prefix) -> pd.DataFrame:
             data['theoretical_tryptic_peptides'].append(len(set(result)))
     
     df = pd.DataFrame(data)
-    df["GeneID"] = df['proteinId'].str.split(mRNA_prefix).str[0]
+    df["geneId"] = df['proteinId'].str.split(mRNA_prefix).str[0]
 
     return df

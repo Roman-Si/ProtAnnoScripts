@@ -8,7 +8,7 @@
         "avoid_keywords": ["muramidase", "inhibitor", "ligase", "amidase enhancer", "transamidase"]
     },
     "esterases": {
-        "keywords": ["esterase", "lipase", "cutinase"],
+        "keywords": ["esterase", "lipase", "cutinase", "lactonase"],
         "avoid_keywords": ["inhibitor", "regulator", "acyl transferase", "lipase-like", "lipase maturation", "esterase-like", "colipase", "chaperone"]
     },
     "peptidases": {
