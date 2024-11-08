@@ -9,7 +9,7 @@
     },
     "esterases": {
         "keywords": ["esterase", "lipase", "cutinase", "lactonase"],
-        "avoid_keywords": ["inhibitor", "regulator", "acyl transferase", "lipase-like", "lipase maturation", "esterase-like", "colipase", "chaperone"]
+        "avoid_keywords": ["inhibitor", "regulator", "acyl transferase", "lipase-like", "lipase maturation", "esterase-like", "colipase", "chaperone", "transcription factor"]
     },
     "peptidases": {
         "keywords": ["peptidase", "crotonase", "protease", "beta-lactamase", "peptide hydrolase", "proteinase"],

@@ -165,6 +165,7 @@ def parse_sprot_for_gag(
     long_df.loc[long_df['type'] == "name", 'qacc'] = long_df['qacc'].str.split(gene_delimiter).str[0]
     long_df = long_df.groupby("qacc").head(1)
     long_df = long_df[~long_df['sacc'].isnull()]
+    long_df = long_df[long_df['sacc'] != ""] # some gene names are empty strings
     
     ### Some product polishing 
     # remove the kDa from product name
