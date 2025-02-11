@@ -96,7 +96,7 @@ def filter_blast_to_sprot(
     df = df.loc[
         (df["pident"] > pident)
         & (df["qcovs"] > qcovs)
-        & (abs(df["qlen"] - df["slen"]) / df["qlen"] < length_difference)
+        & (100 * abs(df["qlen"] - df["slen"]) / df["qlen"]  < length_difference)
     ]
     # keep best hit based on bitscore
     df = (
