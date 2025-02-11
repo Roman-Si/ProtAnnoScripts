@@ -3,15 +3,18 @@ import pandas as pd
 from Bio import SeqIO
 from pyopenms import ProteaseDigestion, AASequence
 
-def parse_proteome_to_df(protein_fasta, mRNA_prefix) -> pd.DataFrame:
+def parse_proteome_to_df(protein_fasta, mRNA_prefix, min_pep_len = 7,max_pep_len = 40, missed_cleavages = 2) -> pd.DataFrame:
     """
     Take a protein FASTA and the mRNA prefix (useful to identify isoforms) and create a dataframe with one row per protein.  
-    The dataframe has number of theoretical tryptic peptides as well (useful for proteomics).
+    The dataframe has number of theoretical tryptic peptides as well.
 
 
     Parameters:
     protein_fasta (str): Path to protein FASTA, can be gzipped as well.
     mRNA_prefix (str): Prefix separating geneID from mRNA identifier. For BRAKER is ".t", for MAKER usually "-R".
+    min_pep_len (int, optional): Minimum length of tryptic peptide, default 7
+    max_pep_len (int, optional): Maximum length of tryptic peptide, default 40
+    missed_cleavages (int, optional): Number of maximum tryptic missed cleavages, default 2
 
     Usage:
     df = parse_proteome_to_df("../proteins.fasta", "-R")
@@ -41,7 +44,10 @@ def parse_proteome_to_df(protein_fasta, mRNA_prefix) -> pd.DataFrame:
             dig = ProteaseDigestion()
             dig.setEnzyme("Trypsin/P")
             prot_sequence = AASequence.fromString(str(record.seq))
-            dig.digest(prot_sequence, result, 6, 40)
+            # missed cleavages
+            dig.setMissedCleavages(missed_cleavages)
+            # create peptides of length 7-40 usually
+            dig.digest(prot_sequence, result, min_pep_len, max_pep_len)
             data['theoretical_tryptic_peptides'].append(len(set(result)))
     
     df = pd.DataFrame(data)
