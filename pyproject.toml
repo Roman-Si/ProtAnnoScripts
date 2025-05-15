@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "protannoscripts"
+version = "0.0.1"
+description = "Python functions to parse protein annotation tool outputs into pandas DataFrames"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Romanos Siaperas", email = "roman_siap@hotmail.com" }
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+dependencies = [
+  "pandas",
+  "numpy",
+  "biopython",
+  "pyopenms"
+]
+
+[project.urls]
+Homepage = "https://github.com/Roman-Si/ProtAnnoScripts"
+Documentation = "https://github.com/Roman-Si/ProtAnnoScripts#readme"
+Issues = "https://github.com/Roman-Si/ProtAnnoScripts/issues"
+
